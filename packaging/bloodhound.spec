@@ -11,7 +11,7 @@ ROOT = Path(SPECPATH).parent
 ASSETS = ROOT / "bloodhound" / "assets"
 
 a = Analysis(
-    [str(ROOT / "main.py")],
+    [str(ROOT / "bloodhound" / "__main__.py")],
     pathex=[str(ROOT)],
     datas=[(str(ASSETS), "bloodhound/assets")],
     excludes=["pytest", "PIL"],

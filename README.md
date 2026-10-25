@@ -72,21 +72,20 @@ pip install .
 
 ## Running
 
-Any of these opens the window:
+After `pip install .`, start the app with:
 
 ```bash
 bloodhound
 ```
 
+or run the package as a module, which also works straight from a checkout
+without installing anything:
+
 ```bash
 python -m bloodhound
 ```
 
-```bash
-python main.py
-```
-
-The last two also work straight from a checkout without installing anything.
+In PyCharm, create a Python run configuration and set **Module name** to `bloodhound`.
 
 ## Quick start
 
@@ -150,7 +149,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the project layout and conventions.
 ```text
 Bloodhound/
 ├── bloodhound/              the application package
-│   ├── app.py               entry point: creates the window
+│   ├── __main__.py          `python -m bloodhound`
+│   ├── app.py               main(): creates the window (the `bloodhound` command)
 │   ├── core/                file processing, no GUI code
 │   │   ├── engine.py        the 4-step job and its thread pool
 │   │   ├── scanner.py       walking the source folders
@@ -170,7 +170,6 @@ Bloodhound/
 ├── docs/                    user guide, architecture notes, screenshot
 ├── packaging/               PyInstaller recipe
 ├── scripts/                 icon generator
-├── main.py                  launcher for `python main.py` and IDEs
 ├── pyproject.toml           package metadata
 └── requirements*.txt        dependencies
 ```

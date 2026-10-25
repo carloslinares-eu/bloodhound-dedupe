@@ -4,6 +4,17 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-10-25
+
+### Changed
+
+- The PyInstaller build starts from `bloodhound/__main__.py`.
+
+### Removed
+
+- The top-level `main.py` launcher. Start the app with `bloodhound` (after
+  `pip install .`) or `python -m bloodhound`.
+
 ## [1.0.0] - 2026-10-25
 
 First packaged release. The single `main.py` script has become the `bloodhound` package.
