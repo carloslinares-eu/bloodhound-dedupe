@@ -17,14 +17,14 @@ WINDOWS_APP_ID = "Bloodhound.UniqueFileCopier"
 def _prepare_windows() -> None:
     """Sharp text on high-DPI screens, and our own taskbar icon instead of Python's."""
     try:
-        ctypes.windll.shcore.SetProcessDpiAwareness(1)  # system DPI aware
+        ctypes.WinDLL("shcore").SetProcessDpiAwareness(1)  # system DPI aware; Windows 8.1+
     except (AttributeError, OSError):
         try:
-            ctypes.windll.user32.SetProcessDPIAware()
+            ctypes.WinDLL("user32").SetProcessDPIAware()
         except (AttributeError, OSError):
             pass
     try:
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(WINDOWS_APP_ID)
+        ctypes.WinDLL("shell32").SetCurrentProcessExplicitAppUserModelID(WINDOWS_APP_ID)
     except (AttributeError, OSError):
         pass
 

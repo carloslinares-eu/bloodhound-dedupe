@@ -29,7 +29,11 @@ class ProgressTracker:
         self._window = window
         self._job_start: float | None = None
         self._job_end: float | None = None
-        self._reset_phase(Phase.IDLE, 0, 0)
+        self._phase = Phase.IDLE
+        self._files_total = self._bytes_total = 0
+        self._files_done = self._bytes_done = 0
+        self._current: str | None = None
+        self._samples: deque[tuple[float, int, int]] = deque([(clock(), 0, 0)])
 
     # -- updates -----------------------------------------------------------
 
@@ -110,7 +114,7 @@ class ProgressTracker:
         self._files_done = 0
         self._bytes_done = 0
         self._current = None
-        self._samples: deque[tuple[float, int, int]] = deque([(self._clock(), 0, 0)])
+        self._samples = deque([(self._clock(), 0, 0)])
 
     def _eta(self, rate: float | None, files_rate: float | None) -> float | None:
         if self._phase not in _TIMED_PHASES:

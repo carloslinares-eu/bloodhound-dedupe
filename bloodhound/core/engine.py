@@ -23,6 +23,7 @@ import time
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
+from operator import attrgetter
 from typing import TypeVar
 
 from bloodhound.core.errors import OperationCancelled, VerificationError
@@ -30,7 +31,7 @@ from bloodhound.core.hashing import copy_file, hash_file
 from bloodhound.core.models import FileEntry, FileError, JobResult, Phase, ProgressSnapshot
 from bloodhound.core.progress import ProgressTracker
 from bloodhound.core.scanner import assign_root_labels, iter_files
-from bloodhound.utils.paths import is_within, path_key, unique_paths
+from bloodhound.utils.paths import StrPath, is_within, path_key, unique_paths
 
 log = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ class DedupeJob:
     progress and :meth:`cancel` asks the job to stop as soon as possible.
     """
 
-    def __init__(self, sources: Iterable[str], destination: str, workers: int | None = None):
+    def __init__(self, sources: Iterable[StrPath], destination: StrPath, workers: int | None = None):
         self.sources = unique_paths(source for source in sources if source)
         if not self.sources:
             raise ValueError("Please add at least one source folder.")
@@ -154,7 +155,7 @@ class DedupeJob:
                 else:
                     kept.add(entry.digest)
                     unique.append(entry)
-        unique.sort(key=lambda entry: entry.index)
+        unique.sort(key=attrgetter("index"))
         _make_destinations_unique(unique)
 
         result.unique_files = len(unique)
@@ -175,7 +176,7 @@ class DedupeJob:
                 result.bytes_copied += entry.size
             else:
                 result.files_already_present += 1
-        copied.sort(key=lambda entry: entry.index)
+        copied.sort(key=attrgetter("index"))
         return copied
 
     def _verify(self, copied: list[FileEntry], result: JobResult) -> None:
@@ -242,7 +243,7 @@ class DedupeJob:
     def _parallel(
         self, task: Callable[[FileEntry], T], entries: Sequence[FileEntry]
     ) -> Iterator[tuple[FileEntry, T | None, OSError | None]]:
-        """Run ``task`` over ``entries`` on the thread pool, yielding ``(entry, result, error)`` as each finishes.
+        """Run ``task`` for every entry on the thread pool and yield ``(entry, result, error)`` per finished task.
 
         Only a few tasks per worker are queued at a time, which keeps memory flat
         for millions of files and lets Stop take effect quickly.
@@ -254,10 +255,10 @@ class DedupeJob:
 
             def refill() -> None:
                 while len(pending) < pending_limit and not self._cancel.is_set():
-                    entry = next(remaining, None)
-                    if entry is None:
+                    next_entry = next(remaining, None)
+                    if next_entry is None:
                         return
-                    pending[pool.submit(task, entry)] = entry
+                    pending[pool.submit(task, next_entry)] = next_entry
 
             refill()
             while pending:

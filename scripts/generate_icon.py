@@ -1,7 +1,7 @@
 """Draws the Bloodhound icon (a paw print under a magnifying glass) and writes it to bloodhound/assets/.
 
 The generated files are committed, so this only needs to run after changing the
-design. Requires Pillow:  python scripts/generate_icon.py
+design. It needs Pillow (see requirements-dev.txt): ``python scripts/generate_icon.py``
 """
 
 from __future__ import annotations
@@ -28,13 +28,12 @@ ICO_SIZES = [16, 20, 24, 32, 40, 48, 64, 96, 128, 256]
 
 
 def _rounded_background() -> Image.Image:
-    gradient = Image.new("RGBA", (CANVAS, CANVAS))
-    pixels = gradient.load()
-    for y in range(CANVAS):
-        t = y / (CANVAS - 1)
-        color = tuple(round(a + (b - a) * t) for a, b in zip(BACKGROUND_TOP, BACKGROUND_BOTTOM)) + (255,)
-        for x in range(CANVAS):
-            pixels[x, y] = color
+    column = Image.new("RGBA", (1, CANVAS))
+    column.putdata([
+        tuple(round(a + (b - a) * y / (CANVAS - 1)) for a, b in zip(BACKGROUND_TOP, BACKGROUND_BOTTOM)) + (255,)
+        for y in range(CANVAS)
+    ])
+    gradient = column.resize((CANVAS, CANVAS), Image.Resampling.NEAREST)
     mask = Image.new("L", (CANVAS, CANVAS), 0)
     ImageDraw.Draw(mask).rounded_rectangle((40, 40, CANVAS - 40, CANVAS - 40), radius=210, fill=255)
     background = Image.new("RGBA", (CANVAS, CANVAS), (0, 0, 0, 0))
@@ -44,14 +43,14 @@ def _rounded_background() -> Image.Image:
 
 def _rotated_ellipse(image: Image.Image, center: tuple[float, float], size: tuple[float, float],
                      angle: float, fill: tuple[int, ...]) -> None:
-    """Paste an ellipse of ``size`` rotated by ``angle`` degrees (clockwise) centred on ``center``."""
+    """Paste an ellipse of ``size`` rotated by ``angle`` degrees (clockwise) centered on ``center``."""
     width, height = size
     side = int(max(width, height)) + 4
     layer = Image.new("RGBA", (side, side), (0, 0, 0, 0))
     ImageDraw.Draw(layer).ellipse(
         ((side - width) / 2, (side - height) / 2, (side + width) / 2, (side + height) / 2), fill=fill
     )
-    layer = layer.rotate(-angle, resample=Image.BICUBIC, expand=True)
+    layer = layer.rotate(-angle, resample=Image.Resampling.BICUBIC, expand=True)
     image.alpha_composite(layer, (int(center[0] - layer.width / 2), int(center[1] - layer.height / 2)))
 
 
@@ -101,9 +100,9 @@ def draw_icon() -> Image.Image:
 def main() -> None:
     ASSETS.mkdir(parents=True, exist_ok=True)
     master = draw_icon()
-    master.resize((256, 256), Image.LANCZOS).save(ASSETS / "bloodhound.png")
+    master.resize((256, 256), Image.Resampling.LANCZOS).save(ASSETS / "bloodhound.png")
     for size in (48, 64):
-        master.resize((size, size), Image.LANCZOS).save(ASSETS / f"bloodhound-{size}.png")
+        master.resize((size, size), Image.Resampling.LANCZOS).save(ASSETS / f"bloodhound-{size}.png")
     master.save(ASSETS / "bloodhound.ico", sizes=[(s, s) for s in ICO_SIZES])
     print(f"Icons written to {ASSETS}")
 

@@ -61,12 +61,12 @@ their files can never overwrite each other.
 How many files are read, hashed and copied at the same time. The default is the
 number of processor cores, up to 8.
 
-| Storage | Suggested setting |
-|---------|-------------------|
-| SSD / NVMe | the default, or higher |
-| Network share / NAS | 8–16 |
+| Storage                   | Suggested setting                                                                          |
+|---------------------------|--------------------------------------------------------------------------------------------|
+| SSD / NVMe                | the default, or higher                                                                     |
+| Network share / NAS       | 8–16                                                                                       |
 | Spinning hard drive (HDD) | 1–2: several simultaneous reads make the disk seek back and forth and slow everything down |
-| Mixed | set it for the slowest drive involved |
+| Mixed                     | set it for the slowest drive involved                                                      |
 
 ### Progress
 

@@ -1,4 +1,4 @@
-"""Reusable widgets: the folder list, a progress bar that shows text, and the problems dialog."""
+"""Reusable widgets: the folder list, a progress bar that shows text, and a dialog listing skipped files."""
 
 from __future__ import annotations
 
@@ -146,7 +146,7 @@ class ErrorListDialog(tk.Toplevel):
     def __init__(self, parent: tk.Misc, errors: list[FileError]):
         super().__init__(parent)
         self.title(f"Problems ({len(errors):,})")
-        self.transient(parent)
+        self.transient(parent.winfo_toplevel())
         self.minsize(520, 300)
 
         frame = ttk.Frame(self, padding=10)
@@ -162,11 +162,11 @@ class ErrorListDialog(tk.Toplevel):
         text.insert("1.0", self._text)
         text.configure(state="disabled")
         text.grid(row=1, column=0, sticky="nsew")
-        yscroll = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
-        yscroll.grid(row=1, column=1, sticky="ns")
-        xscroll = ttk.Scrollbar(frame, orient="horizontal", command=text.xview)
-        xscroll.grid(row=2, column=0, sticky="ew")
-        text.configure(yscrollcommand=yscroll.set, xscrollcommand=xscroll.set)
+        vertical = ttk.Scrollbar(frame, orient="vertical", command=text.yview)
+        vertical.grid(row=1, column=1, sticky="ns")
+        horizontal = ttk.Scrollbar(frame, orient="horizontal", command=text.xview)
+        horizontal.grid(row=2, column=0, sticky="ew")
+        text.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
 
         buttons = ttk.Frame(frame)
         buttons.grid(row=3, column=0, columnspan=2, sticky="e", pady=(10, 0))

@@ -16,7 +16,7 @@ def test_labels_for_repeated_names_are_numbered():
     assert assign_root_labels(sources) == ["Photos", "Photos (2)", "Photos (3)"]
 
 
-@pytest.mark.skipif(os.name != "nt", reason="drive letters and case-insensitive names are Windows behaviour")
+@pytest.mark.skipif(os.name != "nt", reason="drive letters and case-insensitive names are Windows behavior")
 def test_windows_labels_for_drive_roots_and_case():
     assert assign_root_labels(["D:\\", "E:\\"]) == ["Drive D", "Drive E"]
     assert assign_root_labels(["C:\\x\\photos", "C:\\y\\Photos"]) == ["photos", "Photos (2)"]

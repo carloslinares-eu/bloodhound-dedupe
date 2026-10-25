@@ -11,6 +11,8 @@ log = logging.getLogger(__name__)
 
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 
+_window_icons: list[tk.PhotoImage] = []  # Tk drops images that Python no longer references
+
 
 def asset_path(name: str) -> Path:
     return ASSETS_DIR / name
@@ -24,7 +26,7 @@ def apply_window_icon(root: tk.Tk) -> None:
         else:
             image = tk.PhotoImage(master=root, file=str(asset_path("bloodhound.png")))
             root.iconphoto(True, image)
-            root._bloodhound_icon = image  # Tk only keeps a weak reference
+            _window_icons.append(image)
     except tk.TclError:
         log.warning("Could not load the application icon", exc_info=True)
 

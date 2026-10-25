@@ -37,7 +37,7 @@ class FolderPickerDialog(tk.Toplevel):
     def __init__(self, parent: tk.Misc, title: str, initialdir: str | None = None):
         super().__init__(parent)
         self.title(title)
-        self.transient(parent)
+        self.transient(parent.winfo_toplevel())
         self.minsize(420, 360)
         self.protocol("WM_DELETE_WINDOW", self._cancel)
 
@@ -91,12 +91,11 @@ class FolderPickerDialog(tk.Toplevel):
 
     def _navigate(self, path: str) -> None:
         if path == "" and sys.platform == "win32":
-            names = [f"{letter}:\\" for letter in string.ascii_uppercase if os.path.isdir(f"{letter}:\\")]
+            names = _drive_roots()
         else:
             path = os.path.abspath(os.path.expanduser(path))
             try:
-                with os.scandir(path) as scan:
-                    names = sorted((entry.name for entry in scan if entry.is_dir()), key=str.lower)
+                names = _subfolder_names(path)
             except OSError as exc:
                 messagebox.showerror("Can't open folder", f"{path}\n\n{exc.strerror or exc}", parent=self)
                 return
@@ -129,3 +128,12 @@ class FolderPickerDialog(tk.Toplevel):
     def _cancel(self) -> None:
         self._result = []
         self.destroy()
+
+
+def _drive_roots() -> list[str]:
+    return [f"{letter}:\\" for letter in string.ascii_uppercase if os.path.isdir(f"{letter}:\\")]
+
+
+def _subfolder_names(path: str) -> list[str]:
+    with os.scandir(path) as scan:
+        return sorted((entry.name for entry in scan if entry.is_dir()), key=str.lower)

@@ -17,8 +17,8 @@ def files_under(root: Path) -> dict[str, bytes]:
 
 
 def test_copies_one_instance_of_each_unique_file(make_tree, tmp_path):
-    first = make_tree("first", {"a.txt": "hello", "sub/b.txt": "world", "same-size-1.txt": "abcde"})
-    second = make_tree("second", {"copy-of-a.txt": "hello", "c.txt": "unique!", "same-size-2.txt": "vwxyz"})
+    first = make_tree("first", {"a.txt": "hello", "sub/b.txt": "world", "same-size-1.txt": "apple"})
+    second = make_tree("second", {"copy-of-a.txt": "hello", "c.txt": "unique!", "same-size-2.txt": "lemon"})
     dest = tmp_path / "out"
 
     result = DedupeJob([first, second], dest, workers=4).run()
@@ -26,9 +26,9 @@ def test_copies_one_instance_of_each_unique_file(make_tree, tmp_path):
     assert files_under(dest) == {
         "first/a.txt": b"hello",
         "first/sub/b.txt": b"world",
-        "first/same-size-1.txt": b"abcde",
+        "first/same-size-1.txt": b"apple",
         "second/c.txt": b"unique!",
-        "second/same-size-2.txt": b"vwxyz",
+        "second/same-size-2.txt": b"lemon",
     }
     assert result.files_found == 6
     assert result.unique_files == 5

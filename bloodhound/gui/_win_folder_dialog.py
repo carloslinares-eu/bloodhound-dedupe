@@ -69,8 +69,8 @@ _ITEM_GET_DISPLAY_NAME = 5  # IShellItem
 def _call(interface: c_void_p, index: int, *args, argtypes: tuple = ()) -> int:
     """Call the method at ``index`` in the vtable of a COM ``interface`` pointer."""
     vtable = ctypes.cast(interface, POINTER(POINTER(c_void_p))).contents
-    prototype = ctypes.WINFUNCTYPE(_HRESULT, c_void_p, *argtypes)
-    return prototype(vtable[index])(interface, *args)
+    method = ctypes.cast(vtable[index], ctypes.WINFUNCTYPE(_HRESULT, c_void_p, *argtypes))
+    return method(interface, *args)
 
 
 def _check(hresult: int, what: str) -> None:
@@ -84,7 +84,7 @@ def _release(interface: c_void_p) -> None:
 
 
 def ask_directories(title: str, initialdir: str | None = None, owner: int | None = None) -> list[str]:
-    """Show the dialog and return the chosen folders (an empty list if cancelled).
+    """Show the dialog and return the chosen folders, or an empty list if the user closes it.
 
     Raises :class:`OSError` if the dialog can't be created, so callers can fall
     back to another picker.
@@ -153,7 +153,7 @@ def _get_results(dialog: c_void_p) -> list[str]:
                     "GetDisplayName",
                 )
                 try:
-                    paths.append(ctypes.wstring_at(name.value))
+                    paths.append(ctypes.wstring_at(name))
                 finally:
                     _ole32.CoTaskMemFree(name)
             finally:

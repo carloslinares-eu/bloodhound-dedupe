@@ -37,7 +37,7 @@ MUTED = "#5F5F5F"
 class MainWindow(ttk.Frame):
     """Source list, destination, options, progress readout and Start/Stop buttons."""
 
-    def __init__(self, root: tk.Tk):
+    def __init__(self, root: tk.Tk | tk.Toplevel):
         super().__init__(root, padding=(16, 12, 16, 16))
         self.root = root
         self.grid(row=0, column=0, sticky="nsew")
@@ -201,10 +201,10 @@ class MainWindow(ttk.Frame):
             messagebox.showwarning("Can't start yet", str(exc), parent=self.root)
             return
 
-        self._job, self._job_error = job, None
-        self._thread = threading.Thread(target=self._run_job, args=(job,), name="bloodhound-job", daemon=True)
+        thread = threading.Thread(target=self._run_job, args=(job,), name="bloodhound-job", daemon=True)
+        self._job, self._job_error, self._thread = job, None, thread
         self._set_running(True)
-        self._thread.start()
+        thread.start()
         self.after(POLL_INTERVAL_MS, self._poll)
 
     def _stop(self) -> None:
@@ -271,21 +271,24 @@ class MainWindow(ttk.Frame):
     def _finish(self) -> None:
         job, error = self._job, self._job_error
         self._job = self._thread = None
+        if job is None:
+            return
         self._set_running(False)
         if self._quit_when_stopped:
             self.root.destroy()
             return
 
-        if error is not None or job is None or job.result is None:
+        result = job.result
+        if error is not None or result is None:
+            reason = error if error is not None else "the job ended without a result"
             self.status_text.set("Something went wrong.")
-            self.detail_text.set(str(error))
+            self.detail_text.set(f"{reason}")
             self.progress_bar.set(0.0, "")
             self.remaining_text.set("")
-            messagebox.showerror("Bloodhound", f"The job stopped because of an unexpected error:\n\n{error}",
+            messagebox.showerror("Bloodhound", f"The job stopped because of an unexpected error:\n\n{reason}",
                                  parent=self.root)
             return
 
-        result = job.result
         self.elapsed_text.set(f"Elapsed: {format_duration(result.elapsed)}")
         self.remaining_text.set("")
         if result.cancelled:

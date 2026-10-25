@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 import threading
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from operator import attrgetter
 
 from bloodhound.core.errors import OperationCancelled
 from bloodhound.utils.paths import path_key
@@ -46,9 +48,8 @@ def _is_link(entry: os.DirEntry) -> bool:
     """True for symlinks and Windows junctions, which are skipped to avoid loops."""
     if entry.is_symlink():
         return True
-    is_junction = getattr(entry, "is_junction", None)  # Python 3.12+
-    if is_junction is not None:
-        return is_junction()
+    if sys.version_info >= (3, 12):
+        return entry.is_junction()
     reparse_tag = getattr(entry.stat(follow_symlinks=False), "st_reparse_tag", 0)
     return reparse_tag == _IO_REPARSE_TAG_MOUNT_POINT
 
@@ -73,7 +74,7 @@ def iter_files(
         directory = pending.pop()
         try:
             with os.scandir(directory) as scan:
-                entries = sorted(scan, key=lambda entry: entry.name)
+                entries = sorted(scan, key=attrgetter("name"))
         except OSError as exc:
             if on_error is not None:
                 on_error(directory, exc)

@@ -23,7 +23,7 @@ Then run the app with `bloodhound` (or `python -m bloodhound`) and the tests wit
   `pyproject.toml`.
 - **Never risk the user's files.** Sources are read-only; destination writes go
   through `copy_file` (temporary file plus atomic rename).
-- Add or update tests in `tests/` for behaviour changes, and run `pytest` before
+- Add or update tests in `tests/` for behavior changes, and run `pytest` before
   sending a change.
 - Follow the style of the surrounding code: type hints, short docstrings,
   4-space indentation, lines up to about 120 characters.

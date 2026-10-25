@@ -1,16 +1,10 @@
-<p align="center">
-  <img src="bloodhound/assets/bloodhound.png" width="128" alt="Bloodhound icon: a paw print under a magnifying glass">
-</p>
+![Bloodhound icon: a paw print under a magnifying glass](bloodhound/assets/bloodhound-64.png)
 
-<h1 align="center">Bloodhound</h1>
+# Bloodhound
 
-<p align="center">
-  Finds the unique files across many folders and copies them into one place, leaving the duplicates behind.
-</p>
+Finds the unique files across many folders and copies them into one place, leaving the duplicates behind.
 
-<p align="center">
-  <img src="docs/images/screenshot.png" width="640" alt="The Bloodhound window while copying">
-</p>
+![The Bloodhound window while copying](docs/images/screenshot.png)
 
 Point Bloodhound at a handful of folders (old backups, phone dumps, a copy of a
 copy of your photo library) and a destination. It compares every file by its
@@ -112,12 +106,12 @@ means, resuming, and troubleshooting.
 
 ## How it works
 
-| Step | What happens |
-|------|--------------|
-| 1. Scanning | Lists every file in the source folders with its size. |
+| Step         | What happens                                                                                                                       |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------|
+| 1. Scanning  | Lists every file in the source folders with its size.                                                                              |
 | 2. Comparing | Files with a size no other file has are unique by definition. The rest are hashed with SHA-256 in parallel to find identical ones. |
-| 3. Copying | One copy of each unique file is copied (in parallel) through a temporary file that is renamed into place only once it is complete. |
-| 4. Verifying | Every copy is read back and its hash compared with the source. Mismatches are copied again. |
+| 3. Copying   | One copy of each unique file is copied (in parallel) through a temporary file that is renamed into place only once it is complete. |
+| 4. Verifying | Every copy is read back and its hash compared with the source. Mismatches are copied again.                                        |
 
 More detail, including the threading model, is in [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
