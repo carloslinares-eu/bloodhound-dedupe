@@ -1,0 +1,8 @@
+# Bloodhound has no third-party runtime dependencies.
+# It needs Python 3.10 or newer with Tkinter, which ships with the python.org
+# installers for Windows and macOS. On Linux install it separately, e.g.
+#   Debian/Ubuntu:  sudo apt install python3-tk
+#   Fedora:         sudo dnf install python3-tkinter
+#
+# For development tools (tests, icon generation, building the .exe) see
+# requirements-dev.txt.

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build output (python -m build, PyInstaller)
+build/
+dist/
+
+# Left behind only if Bloodhound is killed in the middle of copying a file
+*.bloodhound-partial
+
+# IDE: personal settings (the rest of .idea/ can be shared)
+.idea/workspace.xml
+.idea/shelf/
+.vscode/
+
+# OS clutter
+.DS_Store
+Thumbs.db
+desktop.ini

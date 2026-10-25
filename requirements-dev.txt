@@ -1,0 +1,5 @@
+# Tools for working on Bloodhound (the app itself needs none of these).
+-r requirements.txt
+pytest>=8.0          # running the test suite
+pillow>=10.0         # scripts/generate_icon.py
+pyinstaller>=6.0     # building a standalone executable (packaging/bloodhound.spec)
